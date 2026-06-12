@@ -1,4 +1,11 @@
 ---
+- name: 20-install - Search for containerd package
+  ansible.builtin.apt_cache:
+    name: "{{ containerd_package_name }}"
+    state: present
+  register: containerd_package_search
+  failed_when: containerd_package_search.cache_hits == 0
+
 - name: 20-install - Install containerd
   ansible.builtin.apt:
     name: "{{ containerd_package_name }}={{ containerd_version }}"

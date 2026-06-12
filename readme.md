@@ -1,7 +1,12 @@
-# Introduction
+# Feature
 
 Ansible playbooks to provision a single-node, GPU-enabled Kubernetes cluster on WSL2 using Infrastructure as Code.
+- Easy to deploy k8s GPU workload in 3 stages.
+- Auto detection for different system architecture (amd64 / arm64)
+- Highly customizable ansible yml files for your homelab or application.
 
+
+### Components
 - WSL2 (ubuntu-26.04): Linux environment on Windows that hosts the cluster nodes and GPU passthrough.
 - Nvidia: GPU drivers and container toolkit that expose NVIDIA GPUs to containers and Kubernetes.
 - Ansible: Automation engine that provisions the host, installs components, and configures the cluster.
@@ -32,6 +37,7 @@ sudo apt install -y ansible
 # Clone ansible infra files
 mkdir ~/projects
 cd ~/projects
+rm -rf ~/projects/ansible-wsl-gpu-k8s
 git clone https://github.com/liam-ng/ansible-wsl-gpu-k8s.git
 cd ansible-wsl-gpu-k8s
 

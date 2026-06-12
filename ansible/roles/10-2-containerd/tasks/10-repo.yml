@@ -16,3 +16,4 @@
     repo: "{{ containerd_apt_repository }}"
     filename: "{{ containerd_apt_repository_filename }}"
     state: present
+    update_cache: true

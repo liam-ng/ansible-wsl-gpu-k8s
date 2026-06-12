@@ -1,7 +1,4 @@
 ---
-# ../tasks/20-install.yml
-containerd_package_name: containerd.io
-
 # ../tasks/handlers/main.yml
 containerd_service_name: containerd
 
@@ -11,6 +8,9 @@ containerd_apt_key_url: https://download.docker.com/linux/ubuntu/gpg
 containerd_apt_key_path: "{{ containerd_apt_keyring_dir }}/docker.asc"
 containerd_apt_repository_filename: docker
 containerd_apt_repository: "deb [arch={{ sys_arch }} signed-by={{ containerd_apt_key_path }}] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+
+# ../tasks/20-install.yml
+containerd_package_name: containerd.io
 
 # ../tasks/30-config.yml
 containerd_config_dir: /etc/containerd
