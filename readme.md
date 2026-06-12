@@ -53,8 +53,11 @@ ansible-playbook ansible/playbooks/30-helm-deployment.yml
 You can revise project files from top-down approach.
 
 Naming convention:
+
 Playbook / Task: `<stage#>-<stage name>.yml`
-        Stage number increment by 10 for unforeseen addition in between stages.
+
+    Stage number increment by 10 for unforeseen addition in between stages.
+
 Role: `<playbook#>-<order>-<component>`
 
 ```
