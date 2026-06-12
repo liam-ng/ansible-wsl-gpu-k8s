@@ -1,0 +1,6 @@
+---
+- name: Restart containerd
+  ansible.builtin.systemd:
+    name: "{{ nvidia_container_toolkit_containerd_service }}"
+    state: restarted
+    daemon_reload: true

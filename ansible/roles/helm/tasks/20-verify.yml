@@ -1,0 +1,6 @@
+---
+- name: Verify Helm version
+  ansible.builtin.command: helm version --short
+  register: helm_verify_version
+  changed_when: false
+  failed_when: helm_verify_version.rc != 0 or helm_version not in helm_verify_version.stdout

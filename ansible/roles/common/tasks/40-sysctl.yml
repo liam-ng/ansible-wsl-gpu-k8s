@@ -1,0 +1,8 @@
+---
+- name: Configure Kubernetes sysctl settings
+  ansible.builtin.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_file: "{{ common_sysctl_file }}"
+    reload: true
+  loop: "{{ common_sysctl_settings }}"

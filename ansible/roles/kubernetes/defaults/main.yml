@@ -1,0 +1,21 @@
+---
+# ../tasks/10-repo.yml
+kubernetes_apt_keyring_dir: /etc/apt/keyrings
+kubernetes_apt_key_url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/Release.key"
+kubernetes_apt_key_path: "{{ kubernetes_apt_keyring_dir }}/kubernetes-apt-keyring.asc"
+kubernetes_apt_repository_filename: kubernetes
+kubernetes_apt_repository: "deb [signed-by={{ kubernetes_apt_key_path }}] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/"
+
+# ../tasks/20-install.yml
+kubernetes_packages:
+  - kubelet
+  - kubeadm
+  - kubectl
+kubernetes_service_name: kubelet
+
+# ../tasks/30-init.yml
+kubernetes_admin_conf: /etc/kubernetes/admin.conf
+kubeadm_init_extra_args: ""
+
+# ../tasks/40-kubeconfig.yml
+kubeconfig_path: "{{ kubeconfig_user_home }}/.kube/config"

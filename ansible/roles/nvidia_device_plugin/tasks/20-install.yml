@@ -1,0 +1,19 @@
+---
+- name: Install NVIDIA device plugin via Helm
+  ansible.builtin.command: >-
+    helm upgrade --install {{ nvdp_release_name }} {{ nvdp_chart_ref }}
+    --namespace {{ nvdp_namespace }}
+    --create-namespace
+    --version {{ nvidia_device_plugin_chart_version }}
+    -f {{ nvdp_values_file }}
+    --set nodeSelector.kubernetes\.io/hostname={{ ansible_hostname }}
+  environment:
+    KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+
+- name: Label the node with the nvidia.com/gpu.present=true
+  ansible.builtin.command: kubectl label node {{ ansible_hostname }} nvidia.com/gpu.present=true
+  environment:
+    KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+  register: label_node
+  changed_when: "'nvidia.com/gpu.present=true' in label_node.stdout"
+  failed_when: label_node.rc != 0

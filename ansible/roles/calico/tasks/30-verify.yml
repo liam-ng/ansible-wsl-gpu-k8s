@@ -1,0 +1,21 @@
+---
+- name: Wait for Calico pods to be ready
+  ansible.builtin.command: >-
+    kubectl wait --for=condition=Ready pods --all
+    -n {{ calico_namespace }}
+    --timeout={{ calico_wait_timeout }}
+  environment:
+    KUBECONFIG: "{{ calico_kubeconfig_path }}"
+  changed_when: false
+  failed_when: false
+
+- name: Verify node is ready
+  ansible.builtin.command: kubectl get nodes -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}'
+  environment:
+    KUBECONFIG: "{{ calico_kubeconfig_path }}"
+  register: node_ready
+  until: node_ready.stdout == "True"
+  retries: 3
+  delay: 10
+  changed_when: false
+  failed_when: node_ready.stdout != "True"

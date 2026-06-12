@@ -1,0 +1,25 @@
+---
+# ../tasks/10-repo.yml
+nvdp_repo_name: nvdp
+nvdp_repo_url: https://nvidia.github.io/k8s-device-plugin
+
+# ../tasks/20-install.yml
+nvdp_release_name: "{{ 'nvdp-arm64' if sys_arch == 'arm64' else 'nvdp' }}"
+nvdp_namespace: nvidia-device-plugin
+
+nvdp_chart_ref: nvdp/nvidia-device-plugin
+nvdp_values_dir: "{{ playbook_dir }}/../roles/helm/vars"
+nvdp_values_file: "{{ nvdp_values_dir }}/helm-nvidia-device-plugin{{ '-arm64' if sys_arch == 'arm64' else '' }}.yaml"
+nvdp_kubeconfig_path: "{{ kubeconfig_user_home }}/.kube/config"
+
+# ../tasks/30-verify.yml
+nvdp_wait_timeout: 300s
+nvdp_gpu_resource_retries: 10
+nvdp_gpu_resource_delay: 10
+
+nvdp_gpu_test_pod_name: gpu-pod
+nvdp_gpu_test_namespace: default
+nvdp_gpu_test_image: nvcr.io/nvidia/k8s/cuda-sample:vectoradd-cuda12.5.0
+nvdp_gpu_test_manifest_path: /tmp/{{ nvdp_gpu_test_pod_name }}.yaml
+nvdp_gpu_test_wait_retries: 15
+nvdp_gpu_test_wait_delay: 10

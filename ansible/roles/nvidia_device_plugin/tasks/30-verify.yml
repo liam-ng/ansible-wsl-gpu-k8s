@@ -1,0 +1,101 @@
+---
+- name: Verify the daemonset is deployed
+  ansible.builtin.command: kubectl get daemonset nvidia-device-plugin-ds -n {{ nvdp_namespace }}
+  environment:
+    KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+  register: daemonset_get
+  until: daemonset_get.stdout | length > 0
+  retries: 3
+  delay: 10
+  changed_when: false
+  failed_when: daemonset_get.rc != 0
+
+- name: Wait for NVIDIA device plugin pods to be ready
+  ansible.builtin.command: >-
+    kubectl wait --for=condition=Ready pods
+    -l app.kubernetes.io/name=nvidia-device-plugin
+    -n {{ nvdp_namespace }}
+    --timeout={{ nvdp_wait_timeout }}
+  environment:
+    KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+  changed_when: false
+  failed_when: false
+
+- name: Verify GPU resource is advertised
+  ansible.builtin.command: kubectl get nodes -o jsonpath='{.items[0].status.allocatable.nvidia\.com/gpu}'
+  environment:
+    KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+  register: gpu_resource
+  until: gpu_resource.stdout | length > 0
+  retries: "{{ nvdp_gpu_resource_retries }}"
+  delay: "{{ nvdp_gpu_resource_delay }}"
+  changed_when: false
+
+- name: Verify gpu-pod is running
+  block:
+    - name: Remove leftover GPU test pod
+      ansible.builtin.command: >-
+        kubectl delete pod {{ nvdp_gpu_test_pod_name }}
+        -n {{ nvdp_gpu_test_namespace }}
+        --ignore-not-found
+      environment:
+        KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+      changed_when: false
+
+    - name: Render GPU test pod manifest
+      ansible.builtin.template:
+        src: gpu-test-pod.yaml.j2
+        dest: "{{ nvdp_gpu_test_manifest_path }}"
+        mode: "0644"
+
+    - name: Deploy GPU test pod
+      ansible.builtin.command: kubectl apply -f {{ nvdp_gpu_test_manifest_path }}
+      environment:
+        KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+      register: gpu_pod_apply
+
+    - name: Wait for GPU test pod to complete
+      ansible.builtin.command: >-
+        kubectl get pod {{ nvdp_gpu_test_pod_name }}
+        -n {{ nvdp_gpu_test_namespace }}
+        -o jsonpath='{.status.phase}'
+      environment:
+        KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+      register: gpu_pod_phase
+      until: gpu_pod_phase.stdout in ['Succeeded', 'Failed']
+      retries: "{{ nvdp_gpu_test_wait_retries }}"
+      delay: "{{ nvdp_gpu_test_wait_delay }}"
+      changed_when: false
+
+    - name: Get GPU test pod logs
+      ansible.builtin.command: >-
+        kubectl logs {{ nvdp_gpu_test_pod_name }}
+        -n {{ nvdp_gpu_test_namespace }}
+      environment:
+        KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+      register: gpu_pod_logs
+      changed_when: false
+
+    - name: Display GPU test pod logs
+      ansible.builtin.debug:
+        msg: "{{ gpu_pod_logs.stdout_lines }}"
+
+    - name: Assert GPU test pod succeeded
+      ansible.builtin.assert:
+        that:
+          - gpu_pod_phase.stdout == 'Succeeded'
+        fail_msg: "GPU test pod did not succeed. Logs: {{ gpu_pod_logs.stdout }}"
+  always:
+    - name: Remove GPU test pod
+      ansible.builtin.command: >-
+        kubectl delete pod {{ nvdp_gpu_test_pod_name }}
+        -n {{ nvdp_gpu_test_namespace }}
+        --ignore-not-found
+      environment:
+        KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+      changed_when: false
+
+    - name: Remove GPU test pod manifest
+      ansible.builtin.file:
+        path: "{{ nvdp_gpu_test_manifest_path }}"
+        state: absent

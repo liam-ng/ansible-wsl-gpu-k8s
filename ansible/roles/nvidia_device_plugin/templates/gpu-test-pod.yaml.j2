@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ nvdp_gpu_test_pod_name }}
+  namespace: {{ nvdp_gpu_test_namespace }}
+spec:
+  restartPolicy: Never
+  runtimeClassName: nvidia
+  containers:
+    - name: cuda-sample
+      image: {{ nvdp_gpu_test_image }}
+      resources:
+        limits:
+          nvidia.com/gpu: 1

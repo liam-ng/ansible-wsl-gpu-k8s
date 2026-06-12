@@ -1,0 +1,14 @@
+---
+- name: Add NVIDIA device plugin Helm repository
+  ansible.builtin.command: helm repo add {{ nvdp_repo_name }} {{ nvdp_repo_url }}
+  environment:
+    KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+  register: nvdp_repo_add
+  changed_when: "'has been added' in nvdp_repo_add.stdout"
+  failed_when: nvdp_repo_add.rc != 0 and 'already exists' not in nvdp_repo_add.stderr
+
+- name: Update Helm repositories
+  ansible.builtin.command: helm repo update
+  environment:
+    KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
+  changed_when: false

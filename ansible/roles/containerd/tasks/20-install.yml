@@ -1,0 +1,11 @@
+---
+- name: Install containerd
+  ansible.builtin.apt:
+    name: "{{ containerd_package_name }}={{ containerd_version }}"
+    state: present
+    update_cache: true
+
+- name: Hold containerd package version
+  ansible.builtin.dpkg_selections:
+    name: "{{ containerd_package_name }}"
+    selection: hold

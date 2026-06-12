@@ -52,13 +52,16 @@ ansible-wsl-gpu-k8s/
     ├── inventories/                    ← WHO to run against (localhost/WSL)
     ├── group_vars/                     ← variables shared by all hosts
     ├── playbooks/                      ← WHAT to run, in WHAT order
+    │   ├── 10-host-provision.yml       ← Contains `common`, `containerd`, `nvidia_container_toolkit` roles
+    │   ├── 20-kubernetes-bootstrap.yml ← Contains `kubernetes` role
+    │   └── 30-helm-deployment.yml      ← Contains `helm`, `calico`, `nvidia_device_plugin` roles
     └── roles/                          ← HOW each component is installed
-      ├── 10-host-provision.yml             ← Contains `common`, `containerd`, `nvidia_container_toolkit` roles
-      ├── 20-kubernetes-bootstrap.yml       ← Contains `kubernetes` role
-      └── 30-helm-deployment.yml            ← Contains `helm`, `calico`, `nvidia_device_plugin` roles
-        └── <role>/                     
-            ├── tasks/                  ← steps to execute
-            └── vars/                   ← role-specific default variables
+        └── <role>/
+            ├── defaults/               ← overridable role defaults
+            ├── handlers/               ← service restart/reload actions when the config task reports a change
+            ├── tasks/                  ← steps to execute, split by responsibility
+            ├── templates/              ← Jinja2-managed configuration files
+            └── vars/                   ← role-specific static values, e.g. Helm value files
 ```
 
 ## Ansible Work Flow

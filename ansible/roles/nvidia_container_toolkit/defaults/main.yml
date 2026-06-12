@@ -1,0 +1,17 @@
+---
+# ../tasks/10-repo.yml
+nvidia_container_toolkit_apt_keyring_dir: /etc/apt/keyrings
+nvidia_container_toolkit_apt_key_url: https://nvidia.github.io/libnvidia-container/gpgkey
+nvidia_container_toolkit_apt_key_path: "{{ nvidia_container_toolkit_apt_keyring_dir }}/nvidia-container-toolkit.asc"
+nvidia_container_toolkit_apt_repository_filename: nvidia-container-toolkit
+nvidia_container_toolkit_apt_repository: "deb [signed-by={{ nvidia_container_toolkit_apt_key_path }}] https://nvidia.github.io/libnvidia-container/stable/deb/{{ sys_arch }} /"
+
+# ../tasks/20-install.yml
+nvidia_container_toolkit_package_name: nvidia-container-toolkit
+
+# ../tasks/30-config.yml
+# Configure the runtime for NVIDIA Container Toolkit (CRI-O or containerd)
+nvidia_container_toolkit_runtime: containerd
+
+# ../tasks/handlers/main.yml
+nvidia_container_toolkit_containerd_service: containerd

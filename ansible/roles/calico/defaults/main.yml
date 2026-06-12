@@ -1,0 +1,16 @@
+---
+# ../tasks/10-repo.yml
+calico_repo_name: projectcalico
+calico_repo_url: https://docs.tigera.io/calico/charts
+
+# ../tasks/20-install.yml
+calico_release_name: calico
+calico_namespace: calico-system
+
+calico_chart_ref: projectcalico/tigera-operator
+calico_values_dir: "{{ playbook_dir }}/../roles/helm/vars"
+calico_values_file: "{{ calico_values_dir }}/helm-calico{{ '-arm64' if sys_arch == 'arm64' else '' }}.yaml"
+calico_kubeconfig_path: "{{ kubeconfig_user_home }}/.kube/config"
+
+# ../tasks/30-verify.yml
+calico_wait_timeout: 300s

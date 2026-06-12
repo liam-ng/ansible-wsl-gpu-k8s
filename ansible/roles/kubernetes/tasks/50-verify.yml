@@ -1,0 +1,23 @@
+---
+- name: Apply pending kubelet restart
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for Kubernetes API to become available
+  ansible.builtin.command: kubectl get nodes
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: kubectl_get_nodes
+  until: kubectl_get_nodes.rc == 0
+  retries: 30
+  delay: 10
+  changed_when: false
+
+- name: Remove control-plane taint for single-node clusters
+  ansible.builtin.command: >-
+    kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: control_plane_taint
+  changed_when: "'untainted' in control_plane_taint.stdout or 'tainted' in control_plane_taint.stdout"
+  failed_when: false
+  when: single_node_cluster | bool

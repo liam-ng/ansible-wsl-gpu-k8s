@@ -1,49 +1,12 @@
 ---
-- name: Create keyrings directory
-  ansible.builtin.file:
-    path: /etc/apt/keyrings
-    state: directory
-    mode: "0755"
+- name: Configure containerd apt repository
+  ansible.builtin.import_tasks: 10-repo.yml
 
-- name: Add Docker apt repository key
-  ansible.builtin.get_url:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    dest: /etc/apt/keyrings/docker.asc
-    mode: "0644"
+- name: Install containerd package
+  ansible.builtin.import_tasks: 20-install.yml
 
-- name: Add Docker apt repository
-  ansible.builtin.apt_repository:
-    repo: "deb [arch={{ sys_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-    filename: docker
-    state: present
----
-- name: Install containerd
-  ansible.builtin.apt:
-    name: "containerd.io={{ containerd_version }}"
-    state: present
-    update_cache: true
+- name: Configure containerd runtime
+  ansible.builtin.import_tasks: 30-config.yml
 
-- name: Generate default containerd configuration
-  ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
-  args:
-    creates: /etc/containerd/config.toml
-
-- name: Enable systemd cgroup driver in containerd
-  ansible.builtin.replace:
-    path: /etc/containerd/config.toml
-    regexp: 'SystemdCgroup = false'
-    replace: 'SystemdCgroup = true'
-  register: containerd_cgroup
-
-- name: Restart containerd after cgroup config change
-  ansible.builtin.systemd:
-    name: containerd
-    state: restarted
-    daemon_reload: true
-  when: containerd_cgroup is changed
-
-- name: Enable and start containerd
-  ansible.builtin.systemd:
-    name: containerd
-    enabled: true
-    state: started
+- name: Verify containerd
+  ansible.builtin.import_tasks: 40-verify.yml

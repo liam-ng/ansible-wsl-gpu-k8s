@@ -7,7 +7,7 @@ kubernetes_package_version: "1.36.1-1.1"
 pod_network_cidr: "192.168.0.0/16"
 
 # Container runtime
-containerd_version: "2.1.8"
+containerd_version: "2.2.0-1"
 
 # Helm charts and tooling
 helm_version: "4.2.1"

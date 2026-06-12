@@ -1,59 +1,12 @@
 ---
-- name: Check active swap
-  ansible.builtin.command: swapon --show
-  register: swapon_status
-  changed_when: false
-  failed_when: false
+- name: Configure swap
+  ansible.builtin.import_tasks: 10-swap.yml
 
-- name: Disable swap
-  ansible.builtin.command: swapoff -a
-  when: swapon_status.stdout | length > 0
-  register: swapoff_result
-  changed_when: swapoff_result.rc == 0
+- name: Install common packages
+  ansible.builtin.import_tasks: 20-packages.yml
 
-- name: Remove swap from fstab
-  ansible.builtin.lineinfile:
-    path: /etc/fstab
-    regexp: '\sswap\s'
-    state: absent
+- name: Configure kernel modules
+  ansible.builtin.import_tasks: 30-kernel.yml
 
-- name: Install base packages
-  ansible.builtin.apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg
-      - gnupg2
-      - software-properties-common
-      - conntrack
-      - socat
-    state: present
-    update_cache: true
-
-- name: Load kernel modules for Kubernetes
-  ansible.builtin.command: "modprobe {{ item }}"
-  loop:
-    - overlay
-    - br_netfilter
-  changed_when: false
-  failed_when: false
-
-- name: Persist kernel modules
-  ansible.builtin.copy:
-    dest: /etc/modules-load.d/k8s.conf
-    content: |
-      overlay
-      br_netfilter
-    mode: "0644"
-
-- name: Configure Kubernetes sysctl settings
-  ansible.builtin.sysctl:
-    name: "{{ item.key }}"
-    value: "{{ item.value }}"
-    sysctl_file: /etc/sysctl.d/99-kubernetes.conf
-    reload: true
-  loop:
-    - { key: net.bridge.bridge-nf-call-iptables, value: "1" }
-    - { key: net.bridge.bridge-nf-call-ip6tables, value: "1" }
-    - { key: net.ipv4.ip_forward, value: "1" }
+- name: Configure sysctl
+  ansible.builtin.import_tasks: 40-sysctl.yml

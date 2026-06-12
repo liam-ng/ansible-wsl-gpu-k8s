@@ -1,0 +1,27 @@
+---
+# ../tasks/20-packages.yml
+common_base_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - gnupg2
+  - software-properties-common
+  - conntrack
+  - socat
+
+# ../tasks/30-kernel.yml
+common_kernel_modules:
+  - overlay
+  - br_netfilter
+common_modules_load_path: /etc/modules-load.d/k8s.conf
+
+# ../tasks/40-sysctl.yml
+common_sysctl_file: /etc/sysctl.d/99-kubernetes.conf
+common_sysctl_settings:
+  - key: net.bridge.bridge-nf-call-iptables
+    value: "1"
+  - key: net.bridge.bridge-nf-call-ip6tables
+    value: "1"
+  - key: net.ipv4.ip_forward
+    value: "1"
