@@ -1,0 +1,107 @@
+---
+- name: Add Kubernetes apt repository key
+  ansible.builtin.get_url:
+    url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/Release.key"
+    dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
+    mode: "0644"
+
+- name: Add Kubernetes apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/"
+    filename: kubernetes
+    state: present
+
+- name: Install Kubernetes packages
+  ansible.builtin.apt:
+    name:
+      - "kubelet={{ kubernetes_package_version }}"
+      - "kubeadm={{ kubernetes_package_version }}"
+      - "kubectl={{ kubernetes_package_version }}"
+    state: present
+    update_cache: true
+
+- name: Hold Kubernetes package versions
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: Enable kubelet service
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
+
+- name: Check if cluster is already initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_admin_conf
+
+- name: Check active swap before kubeadm init
+  ansible.builtin.command: swapon --show
+  register: swapon_status
+  changed_when: false
+  failed_when: false
+  when: not kubeadm_admin_conf.stat.exists
+
+- name: Disable swap before kubeadm init
+  ansible.builtin.command: swapoff -a
+  when:
+    - not kubeadm_admin_conf.stat.exists
+    - swapon_status.stdout | length > 0
+  register: swapoff_result
+  changed_when: swapoff_result.rc == 0
+
+- name: Initialize Kubernetes control plane
+  ansible.builtin.command: >-
+    kubeadm init
+    --pod-network-cidr={{ pod_network_cidr }}
+    {{ kubeadm_init_extra_args }}
+  when: not kubeadm_admin_conf.stat.exists
+  register: kubeadm_init
+
+- name: Restart kubelet after kubeadm init
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+    daemon_reload: true
+  when: kubeadm_init is changed
+
+- name: Create kubeconfig directory for user
+  ansible.builtin.file:
+    path: "{{ kubeconfig_user_home }}/.kube"
+    state: directory
+    mode: "0700"
+    owner: "{{ kubeconfig_user }}"
+    group: "{{ kubeconfig_user }}"
+
+- name: Copy admin kubeconfig to user home
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ kubeconfig_user_home }}/.kube/config"
+    remote_src: true
+    mode: "0600"
+    owner: "{{ kubeconfig_user }}"
+    group: "{{ kubeconfig_user }}"
+
+- name: Wait for Kubernetes API to become available
+  ansible.builtin.command: kubectl get nodes
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user_home }}/.kube/config"
+  register: kubectl_get_nodes
+  until: kubectl_get_nodes.rc == 0
+  retries: 30
+  delay: 10
+  changed_when: false
+
+- name: Remove control-plane taint for single-node clusters
+  ansible.builtin.command: >-
+    kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user_home }}/.kube/config"
+  register: control_plane_taint
+  changed_when: "'untainted' in control_plane_taint.stdout or 'tainted' in control_plane_taint.stdout"
+  failed_when: false
+  when: single_node_cluster | bool

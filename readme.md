@@ -1,0 +1,101 @@
+# Introduction
+
+Ansible playbooks to provision a single-node, GPU-enabled Kubernetes cluster on WSL2 using Infrastructure as Code.
+
+- WSL2 (ubuntu-26.04): Linux environment on Windows that hosts the cluster nodes and GPU passthrough.
+- Nvidia: GPU drivers and container toolkit that expose NVIDIA GPUs to containers and Kubernetes.
+- Ansible: Automation engine that provisions the host, installs components, and configures the cluster.
+- Kubernetes: Container orchestration platform for running and scheduling GPU workloads.
+- Helm: Package manager used to deploy Calico and the NVIDIA device plugin as charts.
+- Calico: Container network interface (CNI) that provides pod networking for the cluster.
+
+# Pre-requisites
+- WSL2 and ubuntu installed
+
+```powershell
+# Install WSL2
+wsl --install
+
+# Install Ubuntu-26.04 or a distro of your choice for your WSL2
+wsl.exe --list --online
+wsl.exe --install -d Ubuntu-26.04
+```
+
+# Quickstart
+Run following commands within WSL
+
+```bash
+# Install Ansible for deployment / configurations
+sudo apt update
+sudo apt install ansible
+
+# Clone ansible infra files
+git clone repo <url>
+cd ansible-wsl-gpu-k8s
+
+# Step 1: Bootstrap host, Kubernetes, and GPU components
+ansible-playbook ansible/playbooks/10-host-provision.yml
+ansible-playbook ansible/playbooks/20-kubernetes-bootstrap.yml
+ansible-playbook ansible/playbooks/30-helm-deployment.yml
+```
+
+
+# Project Structure
+
+You can revise project files from top-down approach.
+
+```
+ansible-wsl-gpu-k8s/
+├── ansible.cfg                         ← project settings (inventory path, roles path)
+├── versions.yml                        ← version pins (loaded by playbooks)
+└── ansible/
+    ├── inventories/                    ← WHO to run against (localhost/WSL)
+    ├── group_vars/                     ← variables shared by all hosts
+    ├── playbooks/                      ← WHAT to run, in WHAT order
+    └── roles/                          ← HOW each component is installed
+      ├── 10-host-provision.yml             ← Contains `common`, `containerd`, `nvidia_container_toolkit` roles
+      ├── 20-kubernetes-bootstrap.yml       ← Contains `kubernetes` role
+      └── 30-helm-deployment.yml            ← Contains `helm`, `calico`, `nvidia_device_plugin` roles
+        └── <role>/                     
+            ├── tasks/                  ← steps to execute
+            └── vars/                   ← role-specific default variables
+```
+
+## Ansible Work Flow
+```
+Git Repository
+    │
+    ▼
+Jenkins Pipeline
+    │
+    ├── Checkout code
+    │
+    ├── Run lint/validation
+    │      ├── ansible-lint
+    │      └── syntax validation
+    │
+    ├── Execute Host provision Playbook #1
+    │      ├── Disable swap
+    │      ├── WSL bootstrap
+    │      ├── containerd install
+    │      ├── NVIDIA Container Toolkit install
+    │      └── system configuration
+    │
+    ├── Execute Kubernetes bootstrap Playbook #2
+    │      ├── kubeadm install
+    │      ├── kubelet install
+    │      ├── kubectl install
+    │      ├── kubeadm init
+    │      └── kubeconfig setup
+    │
+    ├── Execute Helm deployments Playbook #3
+    │      ├── CNI (Calico) install 
+    │      └── nvidia-device-plugin install
+    │
+    └── Verification tests
+           ├── kubectl get nodes
+           ├── kubectl get pods -A
+           ├── nvidia-smi
+           ├── verify nvidia.com/gpu resource
+           └── test GPU workload
+```

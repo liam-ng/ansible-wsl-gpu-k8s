@@ -1,0 +1,30 @@
+---
+- name: Add NVIDIA Container Toolkit apt key
+  ansible.builtin.get_url:
+    url: https://nvidia.github.io/libnvidia-container/gpgkey
+    dest: /etc/apt/keyrings/nvidia-container-toolkit.asc
+    mode: "0644"
+
+- name: Add NVIDIA Container Toolkit apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/nvidia-container-toolkit.asc] https://nvidia.github.io/libnvidia-container/stable/deb/{{ sys_arch }} /"
+    filename: nvidia-container-toolkit
+    state: present
+
+- name: Install NVIDIA Container Toolkit
+  ansible.builtin.apt:
+    name: "nvidia-container-toolkit={{ nvidia_container_toolkit_version }}"
+    state: present
+    update_cache: true
+
+- name: Configure containerd for NVIDIA runtime
+  ansible.builtin.command: nvidia-ctk runtime configure --runtime=containerd
+  register: nvidia_ctk_configure
+  changed_when: "'already' not in nvidia_ctk_configure.stdout | default('')"
+
+- name: Restart containerd after NVIDIA runtime configuration
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: true
+  when: nvidia_ctk_configure is changed

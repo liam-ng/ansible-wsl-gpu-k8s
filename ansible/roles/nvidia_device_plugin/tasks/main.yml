@@ -1,0 +1,52 @@
+---
+- name: Set NVIDIA device plugin Helm parameters
+  ansible.builtin.set_fact:
+    nvdp_release_name: "{{ 'nvdp-arm64' if sys_arch == 'arm64' else 'nvdp' }}"
+    nvdp_namespace: nvidia-device-plugin
+    nvdp_values_file: "{{ helm_values_dir }}/helm-nvidia-device-plugin{{ '-arm64' if sys_arch == 'arm64' else '' }}.yaml"
+
+- name: Add NVIDIA device plugin Helm repository
+  ansible.builtin.command: helm repo add nvdp https://nvidia.github.io/k8s-device-plugin
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user_home }}/.kube/config"
+  register: nvdp_repo_add
+  changed_when: "'has been added' in nvdp_repo_add.stdout"
+  failed_when: nvdp_repo_add.rc != 0 and 'already exists' not in nvdp_repo_add.stderr
+
+- name: Update Helm repositories
+  ansible.builtin.command: helm repo update
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user_home }}/.kube/config"
+  changed_when: false
+
+- name: Install NVIDIA device plugin via Helm
+  ansible.builtin.command: >-
+    helm upgrade --install {{ nvdp_release_name }} nvdp/nvidia-device-plugin
+    --namespace {{ nvdp_namespace }}
+    --create-namespace
+    --version {{ nvidia_device_plugin_chart_version }}
+    -f {{ nvdp_values_file }}
+    --set nodeSelector.kubernetes\.io/hostname={{ ansible_hostname }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user_home }}/.kube/config"
+
+- name: Wait for NVIDIA device plugin pods to be ready
+  ansible.builtin.command: >-
+    kubectl wait --for=condition=Ready pods
+    -l app.kubernetes.io/name=nvidia-device-plugin
+    -n {{ nvdp_namespace }}
+    --timeout=300s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user_home }}/.kube/config"
+  changed_when: false
+  failed_when: false
+
+- name: Verify GPU resource is advertised
+  ansible.builtin.command: kubectl get nodes -o jsonpath='{.items[0].status.allocatable.nvidia\.com/gpu}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user_home }}/.kube/config"
+  register: gpu_resource
+  until: gpu_resource.stdout | length > 0
+  retries: 30
+  delay: 10
+  changed_when: false

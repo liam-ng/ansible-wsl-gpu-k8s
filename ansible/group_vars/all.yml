@@ -1,0 +1,10 @@
+---
+sys_arch: "{{ ansible_userspace_architecture }}"
+helm_values_dir: "{{ playbook_dir }}/../roles/helm/vars"
+
+helm_install_dir: "/usr/local/bin"
+#kubeadm_init_extra_args: "--ignore-preflight-errors=Swap,NumCPU,Mem"
+single_node_cluster: true
+
+kubeconfig_user: "{{ ansible_env.USER | default('root') }}"
+kubeconfig_user_home: "{{ ansible_env.HOME | default('/root') }}"

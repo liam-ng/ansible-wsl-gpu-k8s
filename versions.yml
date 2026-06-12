@@ -1,0 +1,18 @@
+---
+project_version: "1.0.0" # As of 12 Jun 2026 
+
+# Kubernetes
+kubernetes_version: "1.36"
+kubernetes_package_version: "1.36.1-1.1"
+pod_network_cidr: "192.168.0.0/16"
+
+# Container runtime
+containerd_version: "2.1.8"
+
+# Helm charts and tooling
+helm_version: "4.2.1"
+calico_version: "v3.31.5"
+nvidia_device_plugin_chart_version: "0.19.2"
+
+# NVIDIA Container Toolkit
+nvidia_container_toolkit_version: "1.19.1-1"

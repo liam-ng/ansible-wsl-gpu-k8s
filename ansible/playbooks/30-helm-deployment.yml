@@ -1,0 +1,10 @@
+---
+- name: Deploy GPU workloads support on Kubernetes
+  hosts: localhost
+  gather_facts: true
+  vars_files:
+    - ../../versions.yml
+  roles:
+    - role: helm
+    - role: calico
+    - role: nvidia_device_plugin

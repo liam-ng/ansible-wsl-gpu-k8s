@@ -1,0 +1,10 @@
+---
+- name: Bootstrap WSL host for Kubernetes
+  hosts: localhost
+  gather_facts: true
+  vars_files:
+    - ../../versions.yml
+  roles:
+    - role: common
+    - role: containerd
+    - role: nvidia_container_toolkit

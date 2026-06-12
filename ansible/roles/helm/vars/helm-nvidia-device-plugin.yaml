@@ -1,0 +1,10 @@
+# NVIDIA device plugin for x86/amd64 (WSL node). Release: nvdp, namespace: nvidia-device-plugin
+#
+#   helm upgrade -i nvdp nvdp/nvidia-device-plugin \
+#     -n nvidia-device-plugin \
+#     -f helm/helm-nvidia-device-plugin.yaml
+
+nodeSelector:
+  kubernetes.io/arch: amd64
+
+failOnInitError: false
