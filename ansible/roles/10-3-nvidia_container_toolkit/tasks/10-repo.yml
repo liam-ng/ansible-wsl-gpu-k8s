@@ -1,17 +1,17 @@
 ---
-- name: Create apt keyrings directory
+- name: 10-repo - Create apt keyrings directory
   ansible.builtin.file:
     path: "{{ nvidia_container_toolkit_apt_keyring_dir }}"
     state: directory
     mode: "0755"
 
-- name: Add NVIDIA Container Toolkit apt key
+- name: 10-repo - Add NVIDIA Container Toolkit apt key
   ansible.builtin.get_url:
     url: "{{ nvidia_container_toolkit_apt_key_url }}"
     dest: "{{ nvidia_container_toolkit_apt_key_path }}"
     mode: "0644"
 
-- name: Add NVIDIA Container Toolkit apt repository
+- name: 10-repo - Add NVIDIA Container Toolkit apt repository
   ansible.builtin.apt_repository:
     repo: "{{ nvidia_container_toolkit_apt_repository }}"
     filename: "{{ nvidia_container_toolkit_apt_repository_filename }}"

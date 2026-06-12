@@ -1,5 +1,5 @@
 ---
-- name: Install Calico via Helm
+- name: 20-install - Install Calico via Helm
   ansible.builtin.command: >-
     helm upgrade --install {{ calico_release_name }} {{ calico_chart_ref }}
     --namespace {{ calico_namespace }}

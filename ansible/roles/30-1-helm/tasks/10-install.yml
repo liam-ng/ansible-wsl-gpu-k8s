@@ -1,18 +1,18 @@
 ---
-- name: Check installed Helm version
+- name: 10-install - Check installed Helm version
   ansible.builtin.command: helm version --short
   register: helm_installed_version
   changed_when: false
   failed_when: false
 
-- name: Download Helm archive
+- name: 10-install - Download Helm archive
   ansible.builtin.get_url:
     url: "{{ helm_archive_url }}"
     dest: "{{ helm_archive_path }}"
     mode: "0644"
   when: helm_installed_version.rc != 0 or helm_version not in helm_installed_version.stdout
 
-- name: Extract Helm binary
+- name: 10-install - Extract Helm binary
   ansible.builtin.unarchive:
     src: "{{ helm_archive_path }}"
     dest: /tmp
@@ -20,7 +20,7 @@
     creates: "{{ helm_extract_dir }}/helm"
   when: helm_installed_version.rc != 0 or helm_version not in helm_installed_version.stdout
 
-- name: Install Helm binary
+- name: 10-install - Install Helm binary
   ansible.builtin.copy:
     src: "{{ helm_extract_dir }}/helm"
     dest: "{{ helm_binary_path }}"

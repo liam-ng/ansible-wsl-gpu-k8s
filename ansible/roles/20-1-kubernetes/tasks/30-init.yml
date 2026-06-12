@@ -1,17 +1,17 @@
 ---
-- name: Check if cluster is already initialized
+- name: 30-init - Check if cluster is already initialized
   ansible.builtin.stat:
     path: "{{ kubernetes_admin_conf }}"
   register: kubeadm_admin_conf
 
-- name: Check active swap before kubeadm init
+- name: 30-init - Check active swap before kubeadm init
   ansible.builtin.command: swapon --show
   register: swapon_status
   changed_when: false
   failed_when: false
   when: not kubeadm_admin_conf.stat.exists
 
-- name: Disable swap before kubeadm init
+- name: 30-init - Disable swap before kubeadm init
   ansible.builtin.command: swapoff -a
   when:
     - not kubeadm_admin_conf.stat.exists
@@ -19,7 +19,7 @@
   register: swapoff_result
   changed_when: swapoff_result.rc == 0
 
-- name: Initialize Kubernetes control plane
+- name: 30-init - Initialize Kubernetes control plane
   ansible.builtin.command: >-
     kubeadm init
     --pod-network-cidr={{ pod_network_cidr }}

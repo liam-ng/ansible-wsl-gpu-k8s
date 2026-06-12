@@ -1,5 +1,5 @@
 ---
-- name: Add Calico Helm repository
+- name: 10-repo - Add Calico Helm repository
   ansible.builtin.command: helm repo add {{ calico_repo_name }} {{ calico_repo_url }}
   environment:
     KUBECONFIG: "{{ calico_kubeconfig_path }}"
@@ -7,7 +7,7 @@
   changed_when: "'has been added' in calico_repo_add.stdout"
   failed_when: calico_repo_add.rc != 0 and 'already exists' not in calico_repo_add.stderr
 
-- name: Update Helm repositories
+- name: 10-repo - Update Helm repositories
   ansible.builtin.command: helm repo update
   environment:
     KUBECONFIG: "{{ calico_kubeconfig_path }}"

@@ -1,8 +1,8 @@
 ---
-- name: Apply pending containerd restart
+- name: 40-verify - Apply pending containerd restart
   ansible.builtin.meta: flush_handlers
 
-- name: Check containerd service is running
+- name: 40-verify - Check containerd service is running
   ansible.builtin.command: systemctl is-active {{ containerd_service_name }}
   register: containerd_service_status
   changed_when: false

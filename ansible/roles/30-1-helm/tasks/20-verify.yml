@@ -1,5 +1,5 @@
 ---
-- name: Verify Helm version
+- name: 20-verify - Verify Helm version
   ansible.builtin.command: helm version --short
   register: helm_verify_version
   changed_when: false

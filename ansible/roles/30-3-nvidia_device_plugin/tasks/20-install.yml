@@ -1,5 +1,5 @@
 ---
-- name: Install NVIDIA device plugin via Helm
+- name: 20-install - Install NVIDIA device plugin via Helm
   ansible.builtin.command: >-
     helm upgrade --install {{ nvdp_release_name }} {{ nvdp_chart_ref }}
     --namespace {{ nvdp_namespace }}
@@ -10,7 +10,7 @@
   environment:
     KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
 
-- name: Label the node with the nvidia.com/gpu.present=true
+- name: 20-install - Label the node with nvidia.com/gpu.present=true
   ansible.builtin.command: kubectl label node {{ ansible_hostname }} nvidia.com/gpu.present=true
   environment:
     KUBECONFIG: "{{ nvdp_kubeconfig_path }}"

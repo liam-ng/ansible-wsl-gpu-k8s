@@ -1,5 +1,5 @@
 ---
-- name: Configure Kubernetes sysctl settings
+- name: 40-sysctl - Configure Kubernetes sysctl settings
   ansible.builtin.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"

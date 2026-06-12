@@ -1,17 +1,17 @@
 ---
-- name: Create apt keyrings directory
+- name: 10-repo - Create apt keyrings directory
   ansible.builtin.file:
     path: "{{ kubernetes_apt_keyring_dir }}"
     state: directory
     mode: "0755"
 
-- name: Add Kubernetes apt repository key
+- name: 10-repo - Add Kubernetes apt repository key
   ansible.builtin.get_url:
     url: "{{ kubernetes_apt_key_url }}"
     dest: "{{ kubernetes_apt_key_path }}"
     mode: "0644"
 
-- name: Add Kubernetes apt repository
+- name: 10-repo - Add Kubernetes apt repository
   ansible.builtin.apt_repository:
     repo: "{{ kubernetes_apt_repository }}"
     filename: "{{ kubernetes_apt_repository_filename }}"

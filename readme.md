@@ -27,10 +27,12 @@ Run following commands within WSL
 ```bash
 # Install Ansible for deployment / configurations
 sudo apt update
-sudo apt install ansible
+sudo apt install -y ansible
 
 # Clone ansible infra files
-git clone repo <url>
+mkdir ~/projects
+cd ~/projects
+git clone https://github.com/liam-ng/ansible-wsl-gpu-k8s.git
 cd ansible-wsl-gpu-k8s
 
 # Step 1: Bootstrap host, Kubernetes, and GPU components

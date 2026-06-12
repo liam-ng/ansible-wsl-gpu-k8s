@@ -1,11 +1,11 @@
 ---
-- name: Load kernel modules for Kubernetes
+- name: 30-kernel - Load kernel modules for Kubernetes
   ansible.builtin.command: "modprobe {{ item }}"
   loop: "{{ common_kernel_modules }}"
   changed_when: false
   failed_when: false
-  
-- name: Persist kernel modules
+
+- name: 30-kernel - Persist kernel modules
   ansible.builtin.copy:
     dest: /etc/modules-load.d/k8s.conf
     content: |
