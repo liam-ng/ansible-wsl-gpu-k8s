@@ -46,7 +46,10 @@ ansible-playbook ansible/playbooks/30-helm-deployment.yml
 
 You can revise project files from top-down approach.
 
-Role naming convention: `<playbook#>-<order>-<component>`. Playbook number increment by 10 for unforeseen additional playbooks in between stages.
+Naming convention:
+Playbook / Task: `<stage#>-<stage name>.yml`
+        Stage number increment by 10 for unforeseen addition in between stages.
+Role: `<playbook#>-<order>-<component>`
 
 ```
 ansible-wsl-gpu-k8s/
@@ -54,7 +57,8 @@ ansible-wsl-gpu-k8s/
 ├── versions.yml                        ← version pins (loaded by playbooks)
 └── ansible/
     ├── inventories/                    ← WHO to run against (localhost/WSL)
-    ├── group_vars/                     ← variables shared by all hosts
+    │   ├── localhost.yml
+    │   └── group_vars/                 ← variables shared by all hosts
     ├── playbooks/                      ← WHAT to run, in WHAT order
     │   ├── 10-host-provision.yml       ← Contains `common`, `containerd`, `nvidia_container_toolkit` roles
     │   ├── 20-kubernetes-bootstrap.yml ← Contains `kubernetes` role
