@@ -44,6 +44,8 @@ ansible-playbook ansible/playbooks/30-helm-deployment.yml
 
 You can revise project files from top-down approach.
 
+Role naming convention: `<playbook#>-<order>-<component>`. Playbook number increment by 10 for unforeseen additional playbooks in between stages.
+
 ```
 ansible-wsl-gpu-k8s/
 ├── ansible.cfg                         ← project settings (inventory path, roles path)

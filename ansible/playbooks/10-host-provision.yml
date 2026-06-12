@@ -5,6 +5,6 @@
   vars_files:
     - ../../versions.yml
   roles:
-    - role: common
-    - role: containerd
-    - role: nvidia_container_toolkit
+    - role: 10-1-common
+    - role: 10-2-containerd
+    - role: 10-3-nvidia_container_toolkit

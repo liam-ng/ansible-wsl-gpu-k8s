@@ -5,4 +5,4 @@
   vars_files:
     - ../../versions.yml
   roles:
-    - role: kubernetes
+    - role: 20-1-kubernetes
