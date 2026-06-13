@@ -83,41 +83,54 @@ ansible-wsl-gpu-k8s/
             └── vars/                   ← role-specific static values, e.g. Helm value files
 ```
 
-## Ansible Work Flow
+## Detailed Ansible Work Flow
 ```
-Git Repository
+WSL2 (Ubuntu 26.04)
     │
     ▼
-Jenkins Pipeline
+ansible-playbook (localhost inventory, 3 stages)
     │
-    ├── Checkout code
+    ├── Stage 1: ansible/playbooks/10-host-provision.yml
+    │      ├── 10-1-common
+    │      │      ├── disable swap and remove from fstab
+    │      │      ├── install base packages
+    │      │      ├── load kernel modules (overlay, br_netfilter)
+    │      │      └── apply Kubernetes sysctl settings
+    │      ├── 10-2-containerd
+    │      │      ├── add Docker/containerd apt repository
+    │      │      ├── install containerd (version pinned, held)
+    │      │      ├── configure containerd (SystemdCgroup)
+    │      │      └── verify containerd service is active
+    │      └── 10-3-nvidia_container_toolkit
+    │             ├── add NVIDIA Container Toolkit apt repository
+    │             ├── install pinned packages:
+    │             │      nvidia-container-toolkit
+    │             │      nvidia-container-toolkit-base
+    │             │      libnvidia-container-tools
+    │             │      libnvidia-container1
+    │             ├── configure containerd NVIDIA runtime (nvidia-ctk)
+    │             └── verify with nvidia-container-cli info
     │
-    ├── Run lint/validation
-    │      ├── ansible-lint
-    │      └── syntax validation
+    ├── Stage 2: ansible/playbooks/20-kubernetes-bootstrap.yml
+    │      └── 20-1-kubernetes
+    │             ├── add Kubernetes apt repository
+    │             ├── install kubeadm, kubelet, kubectl (version pinned, held)
+    │             ├── kubeadm init (skipped if cluster already initialized)
+    │             ├── configure kubeconfig for the current user
+    │             └── verify API is reachable; remove control-plane taint (single-node)
     │
-    ├── Execute Host provision Playbook #1
-    │      ├── Disable swap
-    │      ├── WSL bootstrap
-    │      ├── containerd install
-    │      ├── NVIDIA Container Toolkit install
-    │      └── system configuration
-    │
-    ├── Execute Kubernetes bootstrap Playbook #2
-    │      ├── kubeadm install
-    │      ├── kubelet install
-    │      ├── kubectl install
-    │      ├── kubeadm init (if not already init)
-    │      └── kubeconfig setup
-    │
-    ├── Execute Helm deployments Playbook #3
-    │      ├── CNI (Calico) install (if not already installed)
-    │      └── nvidia-device-plugin install (if not already installed)
-    │
-    └── Verification tests
-           ├── kubectl get nodes
-           ├── kubectl get pods -A
-           ├── nvidia-smi
-           ├── verify nvidia.com/gpu resource
-           └── test GPU workload
+    └── Stage 3: ansible/playbooks/30-helm-deployment.yml
+           ├── 30-1-helm
+           │      ├── install Helm CLI (version pinned)
+           │      └── verify helm version
+           ├── 30-2-calico
+           │      ├── add Tigera/Calico Helm repository
+           │      ├── apply Calico CRDs (helm template | kubectl apply)
+           │      ├── helm upgrade --install Calico (skipped if release exists)
+           │      └── verify Calico pods ready and node is Ready
+           └── 30-3-nvidia_device_plugin
+                  ├── add NVIDIA device plugin Helm repository
+                  ├── helm upgrade --install device plugin (skipped if release exists)
+                  ├── label node nvidia.com/gpu.present=true
+                  └── verify daemonset, GPU resource (nvidia.com/gpu), and GPU test pod
 ```
