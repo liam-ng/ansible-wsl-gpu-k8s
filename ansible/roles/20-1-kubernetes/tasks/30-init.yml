@@ -23,7 +23,7 @@
   ansible.builtin.command: >-
     kubeadm init
     --pod-network-cidr={{ pod_network_cidr }}
-    {{ kubeadm_init_extra_args }}
+    {{ kubeadm_init_extra_args | default('', true) }}
   when: not kubeadm_admin_conf.stat.exists
   register: kubeadm_init
   notify: Restart kubelet
