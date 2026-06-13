@@ -7,7 +7,11 @@ nvidia_container_toolkit_apt_repository_filename: nvidia-container-toolkit
 nvidia_container_toolkit_apt_repository: "deb [signed-by={{ nvidia_container_toolkit_apt_key_path }}] https://nvidia.github.io/libnvidia-container/stable/deb/{{ sys_arch }} /"
 
 # ../tasks/20-install.yml
-nvidia_container_toolkit_package_name: nvidia-container-toolkit
+nvidia_container_toolkit_packages:
+  - nvidia-container-toolkit
+  - nvidia-container-toolkit-base
+  - libnvidia-container-tools
+  - libnvidia-container1
 
 # ../tasks/30-config.yml
 # Configure the runtime for NVIDIA Container Toolkit (CRI-O or containerd)

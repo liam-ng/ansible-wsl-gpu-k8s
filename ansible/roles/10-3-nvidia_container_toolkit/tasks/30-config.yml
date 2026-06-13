@@ -1,6 +1,6 @@
 ---
 - name: 30-config - Configure containerd for NVIDIA runtime
-  ansible.builtin.command: nvidia-ctk runtime configure --runtime={{ nvidia_container_toolkit_runtime }}
+  ansible.builtin.command: nvidia-ctk runtime configure --runtime={{ nvidia_container_toolkit_runtime }} --set-as-default
   register: nvidia_ctk_configure
   changed_when: "'already' not in nvidia_ctk_configure.stdout | default('')"
   notify: Restart containerd

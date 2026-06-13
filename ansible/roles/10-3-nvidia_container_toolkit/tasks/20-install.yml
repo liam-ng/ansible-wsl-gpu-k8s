@@ -1,11 +1,12 @@
 ---
 - name: 20-install - Install NVIDIA Container Toolkit
   ansible.builtin.apt:
-    name: "{{ nvidia_container_toolkit_package_name }}={{ nvidia_container_toolkit_version }}"
+    name: "{{ nvidia_container_toolkit_packages | product([nvidia_container_toolkit_version]) | map('join', '=') | list }}"
     state: present
     update_cache: true
 
-- name: 20-install - Hold NVIDIA Container Toolkit package version
+- name: 20-install - Hold NVIDIA Container Toolkit package versions
   ansible.builtin.dpkg_selections:
-    name: "{{ nvidia_container_toolkit_package_name }}"
+    name: "{{ item }}"
     selection: hold
+  loop: "{{ nvidia_container_toolkit_packages }}"
