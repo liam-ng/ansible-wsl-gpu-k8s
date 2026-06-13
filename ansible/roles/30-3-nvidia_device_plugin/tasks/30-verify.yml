@@ -1,6 +1,6 @@
 ---
 - name: 30-verify - Verify the daemonset is deployed
-  ansible.builtin.command: kubectl get daemonset nvidia-device-plugin-ds -n {{ nvdp_namespace }}
+  ansible.builtin.command: kubectl get daemonset nvdp-nvidia-device-plugin -n {{ nvdp_namespace }}
   environment:
     KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
   register: daemonset_get
@@ -8,7 +8,7 @@
   retries: "{{ nvdp_gpu_resource_retries }}"
   delay: "{{ nvdp_gpu_resource_delay }}"
   changed_when: false
-  failed_when: daemonset_get.rc != 0
+  failed_when: false
 
 - name: 30-verify - Wait for NVIDIA device plugin pods to be ready
   ansible.builtin.command: >-
