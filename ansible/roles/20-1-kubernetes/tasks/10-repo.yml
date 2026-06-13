@@ -11,9 +11,13 @@
     dest: "{{ kubernetes_apt_key_path }}"
     mode: "0644"
 
-- name: 10-repo - Add Kubernetes apt repository
-  ansible.builtin.apt_repository:
-    repo: "{{ kubernetes_apt_repository }}"
-    filename: "{{ kubernetes_apt_repository_filename }}"
-    state: present
+- name: 10-repo - Configure Kubernetes apt repository
+  ansible.builtin.copy:
+    dest: "{{ kubernetes_apt_sources_list }}"
+    content: |
+      {{ kubernetes_apt_repository }}
+    mode: "0644"
+
+- name: 10-repo - Update apt cache
+  ansible.builtin.apt:
     update_cache: true
