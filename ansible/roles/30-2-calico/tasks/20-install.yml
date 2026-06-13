@@ -1,11 +1,32 @@
 ---
-- name: 20-install - Install Calico via Helm
+- name: 20-install - Create tigera-operator namespace
+  ansible.builtin.command: kubectl create namespace {{ calico_operator_namespace }}
+  environment:
+    KUBECONFIG: "{{ calico_kubeconfig_path }}"
+  register: calico_operator_ns
+  changed_when: "'created' in calico_operator_ns.stdout"
+  failed_when: calico_operator_ns.rc != 0 and 'AlreadyExists' not in calico_operator_ns.stderr
+
+- name: 20-install - Install Calico CRDs
+  ansible.builtin.shell: >-
+    helm template {{ calico_crd_release_name }} {{ calico_crd_chart }}
+    --version {{ calico_version }}
+    | kubectl apply --server-side -f -
+  environment:
+    KUBECONFIG: "{{ calico_kubeconfig_path }}"
+  changed_when: false
+
+- name: 20-install - Render Calico Helm values file
+  ansible.builtin.template:
+    src: values.yaml.j2
+    dest: "{{ calico_values_file }}"
+    mode: "0644"
+
+- name: 20-install - Install Calico Tigera Operator via Helm
   ansible.builtin.command: >-
     helm upgrade --install {{ calico_release_name }} {{ calico_chart_ref }}
-    --namespace {{ calico_namespace }}
-    --create-namespace
+    --namespace {{ calico_operator_namespace }}
     --version {{ calico_version }}
     -f {{ calico_values_file }}
-    --set installation.calicoNetwork.ipPools[0].cidr={{ pod_network_cidr }}
   environment:
     KUBECONFIG: "{{ calico_kubeconfig_path }}"

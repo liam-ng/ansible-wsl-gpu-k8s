@@ -1,0 +1,7 @@
+installation:
+  kubernetesProvider: Linux
+  calicoNetwork:
+    ipPools:
+      - cidr: {{ pod_network_cidr }}
+        encapsulation: VXLANCrossSubnet
+        blockSize: 24
