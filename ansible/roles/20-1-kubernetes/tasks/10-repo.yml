@@ -16,3 +16,4 @@
     repo: "{{ kubernetes_apt_repository }}"
     filename: "{{ kubernetes_apt_repository_filename }}"
     state: present
+    update_cache: true
