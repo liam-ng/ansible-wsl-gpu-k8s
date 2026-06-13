@@ -17,6 +17,6 @@ containerd_version: "2.2.4-1~ubuntu.26.04~resolute"
 # Helm charts and tooling
 helm_version: "4.2.1"
 ## helm search repo projectcalico
-calico_version: "v3.31.5"
+calico_version: "v3.32.0"
 ## helm search repo nvdp
 nvidia_device_plugin_chart_version: "0.19.2"

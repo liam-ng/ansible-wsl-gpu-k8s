@@ -12,8 +12,6 @@
     helm template {{ calico_crd_release_name }} {{ calico_crd_chart }}
     --version {{ calico_version }}
     | kubectl apply --server-side -f -
-  environment:
-    KUBECONFIG: "{{ calico_kubeconfig_path }}"
   changed_when: false
 
 - name: 20-install - Render Calico Helm values file
