@@ -1,18 +1,23 @@
 ---
 project_version: "1.0.0" # As of 12 Jun 2026 
 
+# NVIDIA Container Toolkit
+## apt search nvidia-container-toolkit
+nvidia_container_toolkit_version: "1.19.1-1"
+
 # Kubernetes
 kubernetes_version: "1.36"
+## apt search kubelet
 kubernetes_package_version: "1.36.1-1.1"
 pod_network_cidr: "192.168.0.0/16"
 
 # Container runtime
+## apt search containerd.io
 containerd_version: "2.2.4-1~ubuntu.26.04~resolute"
 
 # Helm charts and tooling
 helm_version: "4.2.1"
+## helm search repo projectcalico
 calico_version: "v3.31.5"
+## helm search repo nvdp
 nvidia_device_plugin_chart_version: "0.19.2"
-
-# NVIDIA Container Toolkit
-nvidia_container_toolkit_version: "1.19.1-1"

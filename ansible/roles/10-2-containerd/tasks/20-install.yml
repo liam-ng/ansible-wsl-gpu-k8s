@@ -1,6 +1,6 @@
 ---
 - name: 20-install - Search for containerd package
-  ansible.builtin.command: apt-cache madison {{ containerd_package_name }}={{ containerd_version }}
+  ansible.builtin.command: apt-cache madison {{ containerd_package_name }}
   register: containerd_package_search
   changed_when: false
   failed_when: containerd_package_search.rc != 0 or containerd_package_search.stdout | length == 0
