@@ -2,7 +2,6 @@
 # Map Ansible CPU facts to Debian/apt architecture names (amd64, arm64).
 sys_arch: "{{ {'x86_64': 'amd64', 'aarch64': 'arm64'}.get(ansible_architecture, ansible_architecture) }}"
 
-#kubeadm_init_extra_args: "--ignore-preflight-errors=Swap,NumCPU,Mem"
 single_node_cluster: true
 
 kubeconfig_user: "{{ ansible_env.USER | default('root') }}"

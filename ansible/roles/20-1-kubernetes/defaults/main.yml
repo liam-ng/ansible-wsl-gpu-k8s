@@ -14,8 +14,9 @@ kubernetes_packages:
 kubernetes_service_name: kubelet
 
 # ../tasks/30-init.yml
+pod_network_cidr: "192.168.0.0/16"
 kubernetes_admin_conf: /etc/kubernetes/admin.conf
-kubeadm_init_extra_args: ""
+#kubeadm_init_extra_args: "--ignore-preflight-errors=Swap,NumCPU,Mem"
 
 # ../tasks/40-kubeconfig.yml
 kubeconfig_path: "{{ kubeconfig_user_home }}/.kube/config"

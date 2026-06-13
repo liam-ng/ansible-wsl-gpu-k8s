@@ -9,7 +9,6 @@ nvidia_container_toolkit_version: "1.19.1-1"
 kubernetes_version: "1.36"
 ## apt search kubelet
 kubernetes_package_version: "1.36.1-1.1"
-pod_network_cidr: "192.168.0.0/16"
 
 # Container runtime
 ## apt search containerd.io
