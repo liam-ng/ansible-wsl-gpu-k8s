@@ -4,7 +4,7 @@ calico_repo_name: projectcalico
 calico_repo_url: https://docs.tigera.io/calico/charts
 
 # ../tasks/20-install.yml
-calico_namespace: calico-system
+calico_namespace: calico
 
 calico_chart_ref: projectcalico/tigera-operator
 calico_release_name: calico
