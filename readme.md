@@ -107,12 +107,12 @@ Jenkins Pipeline
     │      ├── kubeadm install
     │      ├── kubelet install
     │      ├── kubectl install
-    │      ├── kubeadm init (if not init already)
+    │      ├── kubeadm init (if not already init)
     │      └── kubeconfig setup
     │
     ├── Execute Helm deployments Playbook #3
-    │      ├── CNI (Calico) install 
-    │      └── nvidia-device-plugin install
+    │      ├── CNI (Calico) install (if not already installed)
+    │      └── nvidia-device-plugin install (if not already installed)
     │
     └── Verification tests
            ├── kubectl get nodes

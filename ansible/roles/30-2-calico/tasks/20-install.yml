@@ -26,6 +26,14 @@
     dest: "{{ calico_values_file_path }}"
     mode: "0644"
 
+- name: 20-install - Check if Calico Helm release is installed
+  ansible.builtin.command: helm status {{ calico_release_name }} -n {{ calico_namespace }}
+  environment:
+    KUBECONFIG: "{{ calico_kubeconfig_path }}"
+  register: calico_helm_status
+  changed_when: false
+  failed_when: false
+
 - name: 20-install - Install Calico Tigera Operator via Helm
   ansible.builtin.command: >-
     helm upgrade --install {{ calico_release_name }} {{ calico_chart_ref }}
@@ -35,3 +43,4 @@
     -f {{ calico_values_file_path }}
   environment:
     KUBECONFIG: "{{ calico_kubeconfig_path }}"
+  when: calico_helm_status.rc != 0
