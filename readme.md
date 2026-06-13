@@ -107,7 +107,7 @@ Jenkins Pipeline
     │      ├── kubeadm install
     │      ├── kubelet install
     │      ├── kubectl install
-    │      ├── kubeadm init
+    │      ├── kubeadm init (if not init already)
     │      └── kubeconfig setup
     │
     ├── Execute Helm deployments Playbook #3

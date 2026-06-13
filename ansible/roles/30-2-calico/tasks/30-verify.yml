@@ -15,7 +15,7 @@
     KUBECONFIG: "{{ calico_kubeconfig_path }}"
   register: node_ready
   until: node_ready.stdout == "True"
-  retries: 3
+  retries: 5
   delay: 10
   changed_when: false
   failed_when: node_ready.stdout != "True"
