@@ -5,6 +5,7 @@ Ansible playbooks to provision a single-node, GPU-enabled Kubernetes cluster on 
 - Auto detection for different system architecture (amd64 / arm64)
 - Highly customizable ansible yml files for your homelab or application.
 
+<img width="70%" height="826" alt="Ansible-WSL-k8s" src="https://github.com/user-attachments/assets/a8a258a5-ac79-4c1b-996f-3fd6e3f7884d" />
 
 ### Components
 - WSL2 (ubuntu-26.04): Linux environment on Windows that hosts the cluster nodes and GPU passthrough.
@@ -47,8 +48,10 @@ sudo ansible-playbook ansible/playbooks/10-host-provision.yml
 sudo ansible-playbook ansible/playbooks/20-kubernetes-bootstrap.yml
 # Step 3: Deploy Calico CNI & nvidia device plugin via Helm 
 sudo ansible-playbook ansible/playbooks/30-helm-deployment.yml
+sudo kubectl get pods -A
 ```
 
+[![Watch the installation steps]([https://github.com/liam-ng/ansible-wsl-gpu-k8s/blob/main/media/ansible%20playbook.mp4](https://github.com/user-attachments/assets/a8a258a5-ac79-4c1b-996f-3fd6e3f7884d))](https://github.com/liam-ng/ansible-wsl-gpu-k8s/blob/main/media/ansible%20playbook.mp4)
 
 # Project Structure
 
