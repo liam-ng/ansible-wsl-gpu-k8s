@@ -5,8 +5,8 @@
     KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
   register: daemonset_get
   until: daemonset_get.stdout | length > 0
-  retries: 3
-  delay: 10
+  retries: "{{ nvdp_gpu_resource_retries }}"
+  delay: "{{ nvdp_gpu_resource_delay }}"
   changed_when: false
   failed_when: daemonset_get.rc != 0
 
