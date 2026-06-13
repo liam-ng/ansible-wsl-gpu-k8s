@@ -10,7 +10,7 @@ Ansible playbooks to provision a single-node, GPU-enabled Kubernetes cluster on 
 - WSL2 (ubuntu-26.04): Linux environment on Windows that hosts the cluster nodes and GPU passthrough.
 - Nvidia: GPU drivers and container toolkit that expose NVIDIA GPUs to containers and Kubernetes.
 - Ansible: Automation engine that provisions the host, installs components, and configures the cluster.
-- Kubernetes: Container orchestration platform for running and scheduling GPU workloads.
+- Kubernetes (k8s): Container orchestration platform for running and scheduling GPU workloads.
 - Helm: Package manager used to deploy Calico and the NVIDIA device plugin as charts.
 - Calico: Container network interface (CNI) that provides pod networking for the cluster.
 
