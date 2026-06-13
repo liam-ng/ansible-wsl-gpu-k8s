@@ -41,7 +41,7 @@ rm -rf ~/projects/ansible-wsl-gpu-k8s
 git clone https://github.com/liam-ng/ansible-wsl-gpu-k8s.git
 cd ansible-wsl-gpu-k8s
 
-# Step 1: Bootstrap host, Kubernetes, and GPU components
+# Step 1: Bootstrap host, Kubernetes, and Nvidia GPU components
 sudo ansible-playbook ansible/playbooks/10-host-provision.yml
 # Step 2: Install kubeadm, kubelet, kubectl & init 
 sudo ansible-playbook ansible/playbooks/20-kubernetes-bootstrap.yml
