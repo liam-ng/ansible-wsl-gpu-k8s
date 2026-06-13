@@ -1,6 +1,6 @@
 ---
 - name: 20-install - Create tigera-operator namespace
-  ansible.builtin.command: kubectl create namespace {{ calico_operator_namespace }}
+  ansible.builtin.command: kubectl create namespace {{ calico_namespace }}
   environment:
     KUBECONFIG: "{{ calico_kubeconfig_path }}"
   register: calico_operator_ns
@@ -19,14 +19,14 @@
 - name: 20-install - Render Calico Helm values file
   ansible.builtin.template:
     src: values.yaml.j2
-    dest: "{{ calico_values_file }}"
+    dest: "{{ calico_values_file_path }}"
     mode: "0644"
 
 - name: 20-install - Install Calico Tigera Operator via Helm
   ansible.builtin.command: >-
     helm upgrade --install {{ calico_release_name }} {{ calico_chart_ref }}
-    --namespace {{ calico_operator_namespace }}
+    --namespace {{ calico_namespace }}
     --version {{ calico_version }}
-    -f {{ calico_values_file }}
+    -f {{ calico_values_file_path }}
   environment:
     KUBECONFIG: "{{ calico_kubeconfig_path }}"
