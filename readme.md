@@ -48,7 +48,6 @@ sudo ansible-playbook ansible/playbooks/10-host-provision.yml
 sudo ansible-playbook ansible/playbooks/20-kubernetes-bootstrap.yml
 # Step 3: Deploy Calico CNI & nvidia device plugin via Helm 
 sudo ansible-playbook ansible/playbooks/30-helm-deployment.yml
-sudo kubectl get pods -A
 ```
 
 [![Watch the installation steps]([https://github.com/liam-ng/ansible-wsl-gpu-k8s/blob/main/media/ansible%20playbook.mp4](https://github.com/user-attachments/assets/a8a258a5-ac79-4c1b-996f-3fd6e3f7884d))](https://github.com/liam-ng/ansible-wsl-gpu-k8s/blob/main/media/ansible%20playbook.mp4)
