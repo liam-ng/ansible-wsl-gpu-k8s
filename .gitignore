@@ -131,3 +131,5 @@ changelogs/.plugin-cache.yaml
 .ansible-test-timeout.json
 # Agents
 CLAUDE.local.md
+
+*.excalidraw
