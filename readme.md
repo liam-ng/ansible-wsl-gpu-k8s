@@ -42,11 +42,11 @@ git clone https://github.com/liam-ng/ansible-wsl-gpu-k8s.git
 cd ansible-wsl-gpu-k8s
 
 # Step 1: Bootstrap host, Kubernetes, and GPU components
-ansible-playbook ansible/playbooks/10-host-provision.yml
+sudo ansible-playbook ansible/playbooks/10-host-provision.yml
 # Step 2: Install kubeadm, kubelet, kubectl & init 
-ansible-playbook ansible/playbooks/20-kubernetes-bootstrap.yml
+sudo ansible-playbook ansible/playbooks/20-kubernetes-bootstrap.yml
 # Step 3: Deploy Calico CNI & nvidia device plugin via Helm 
-ansible-playbook ansible/playbooks/30-helm-deployment.yml
+sudo ansible-playbook ansible/playbooks/30-helm-deployment.yml
 ```
 
 
