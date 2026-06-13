@@ -9,7 +9,7 @@ calico_namespace: calico-system
 calico_chart_ref: projectcalico/tigera-operator
 calico_release_name: calico
 
-calico_crd_chart: projectcalico/projectcalico.org.v3
+calico_crd_chart: projectcalico/crd.projectcalico.org.v1
 calico_crd_release_name: calico-crds
 
 calico_values_file_path: /tmp/calico-values.yaml
