@@ -4,6 +4,7 @@ calico_repo_name: projectcalico
 calico_repo_url: https://docs.tigera.io/calico/charts
 
 # ../tasks/20-install.yml
+# Change pod_network_cidr in group_vars/all.yml
 calico_release_name: calico
 calico_namespace: calico-system
 

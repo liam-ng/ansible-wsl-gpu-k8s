@@ -6,3 +6,5 @@ single_node_cluster: true
 
 kubeconfig_user: "{{ ansible_env.USER | default('root') }}"
 kubeconfig_user_home: "{{ ansible_env.HOME | default('/root') }}"
+
+pod_network_cidr: "192.168.0.0/16"
