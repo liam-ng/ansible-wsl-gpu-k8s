@@ -19,7 +19,7 @@
   when: nvdp_helm_status.rc != 0
 
 - name: 20-install - Label the node with nvidia.com/gpu.present=true
-  ansible.builtin.command: kubectl label node {{ ansible_hostname }} nvidia.com/gpu.present=true
+  ansible.builtin.command: kubectl label node {{ nvdp_node_name }} nvidia.com/gpu.present=true
   environment:
     KUBECONFIG: "{{ nvdp_kubeconfig_path }}"
   register: label_node

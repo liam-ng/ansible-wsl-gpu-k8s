@@ -11,6 +11,7 @@ nvdp_chart_ref: nvdp/nvidia-device-plugin
 nvdp_values_dir: "{{ playbook_dir }}/../roles/30-3-nvidia_device_plugin/vars"
 nvdp_values_file_path: "{{ nvdp_values_dir }}/helm-nvidia-device-plugin{{ '-arm64' if sys_arch == 'arm64' else '' }}.yaml"
 nvdp_kubeconfig_path: "{{ kubeconfig_user_home }}/.kube/config"
+nvdp_node_name: "{{ ansible_hostname | lower }}"
 
 # ../tasks/30-verify.yml
 nvdp_wait_timeout: 300s
